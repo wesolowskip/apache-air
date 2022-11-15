@@ -1,0 +1,2 @@
+FROM apache/nifi
+EXPOSE 8080 8443
