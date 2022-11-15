@@ -15,3 +15,5 @@ Sprawdzenie, że kafka działa:
 2. `kafka-topics.sh --create --topic quickstart-events --bootstrap-server localhost:9092`
 3. `kafka-console-producer.sh --topic quickstart-events --bootstrap-server localhost:9092` i wpisujemy jakieś śmieci
 4. `kafka-console-consumer.sh --topic quickstart-events --from-beginning --bootstrap-server localhost:9092` i voila!
+
+Spark streaming też chyba działa, można się do niego dostać po zwykłym http http://localhost:8888/

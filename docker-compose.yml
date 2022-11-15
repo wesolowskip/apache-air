@@ -77,6 +77,18 @@ services:
     ports:
       - "9092:9092"
 
+  spark:
+    image: docker.io/bitnami/spark:3
+    container_name: spark-straming
+    environment:
+      - SPARK_MODE=master
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+    ports:
+      - '8888:8080'
+
 
   # bigdata-cluster-elasticsearch:
   #   build: ./bigdata-cluster-elasticsearch/
