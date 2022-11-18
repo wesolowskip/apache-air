@@ -47,11 +47,18 @@ services:
 #    - "9092:9092"
 #    networks:
 #      - bigdata-cluster-network
+  mock-api:
+    build: mock-api
+    container_name: bigdata-mock-air-api
+    ports:
+    - "5000:1337"
   nifi:
     image: apache/nifi
     container_name: bigdata-nifi
     ports:
     - "8443:8443" # https://docs.docker.com/compose/compose-file/compose-file-v3/#ports Pamietajmy o cudzyslowach!
+    volumes:
+    - ./nifi/nifi-mount:/home/user
 
   # https://github.com/bitnami/bitnami-docker-kafka/issues/159
   kafka:

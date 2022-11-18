@@ -51,7 +51,7 @@ def get_stations():
 
 
 def save_stations(stations):
-    if not os.path.exists(variables['stations_path']):
+    if not os.path.exists(os.path.dirname(variables['stations_path'])):
         os.mkdir(os.path.dirname(variables['stations_path']))
     with open(variables['stations_path'], 'w') as file:
         json.dump(stations, file)
@@ -96,7 +96,10 @@ def check_update():
         else:
             maxes[datetime.strptime('1970-01-01 00:00:00', '%Y-%m-%d %H:%M:%S')] += 1
     now = datetime.now()
-    dates_flag = (now - maxes.most_common()[0][0]).seconds / 3600 > 1.002  # hour and 7.2seconds
+    if maxes:
+        dates_flag = (now - maxes.most_common()[0][0]).seconds / 3600 > 1.002  # hour and 7.2seconds
+    else:
+        dates_flag = True
     return dates_flag and not read_save_control()['saving']
 
 
@@ -116,6 +119,9 @@ def read_save_control():
 
 
 def save_save_control(save_control):
+    dir_name = os.path.dirname(variables['save_control_path'])
+    if not os.path.exists(dir_name): 
+        os.mkdir(dir_name)
     with open(variables['save_control_path'], 'w') as file:
         return json.dump(save_control, file)
 
@@ -134,4 +140,5 @@ def save_all():
 
 
 if __name__ == '__main__':
+    save_save_control({'saving': False})
     perform_update_if_needed()
