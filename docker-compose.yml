@@ -49,11 +49,11 @@ services:
 #      - bigdata-cluster-network
   mock-api:
     build: mock-api
-    container_name: bigdata-mock-air-api
+    container_name: mock-air-api
     ports:
     - "5000:1337"
   nifi:
-    image: apache/nifi
+    build: nifi
     container_name: bigdata-nifi
     ports:
     - "8443:8443" # https://docs.docker.com/compose/compose-file/compose-file-v3/#ports Pamietajmy o cudzyslowach!
