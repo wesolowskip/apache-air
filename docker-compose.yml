@@ -49,16 +49,26 @@ services:
   #      - bigdata-cluster-network
   mock-api:
     build: mock-api
-    container_name: bigdata-mock-air-api
+    container_name: mock-air-api
     ports:
       - "5000:1337"
+
   nifi:
-    image: apache/nifi
-    container_name: bigdata-nifi
+    build: nifi
+    container_name: nifi
     ports:
-      - "8443:8443" # https://docs.docker.com/compose/compose-file/compose-file-v3/#ports Pamietajmy o cudzyslowach!
+      - "8443:8443"
     volumes:
       - ./nifi/nifi-mount:/home/user
+    environment:
+      - SINGLE_USER_CREDENTIALS_USERNAME=admin
+      - SINGLE_USER_CREDENTIALS_PASSWORD=adminadminadmin
+
+  nifi-registry:
+    container_name: nifi-registry
+    image: apache/nifi-registry
+    ports:
+      - "18080:18080"
   namenode:
     image: bde2020/hadoop-namenode:2.0.0-hadoop3.2.1-java8
     container_name: namenode

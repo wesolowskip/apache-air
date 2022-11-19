@@ -7,4 +7,7 @@ RUN pip3 install -r requirements.txt
 
 COPY . .
 
+RUN apt update && apt install tzdata -y
+ENV TZ="Europe/Warsaw"
+
 CMD [ "python3", "mockAPI.py"]

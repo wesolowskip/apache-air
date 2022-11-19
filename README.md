@@ -4,7 +4,13 @@
 
 Nifi stoi na https://localhost:8443/nifi
 
-Usera i hasło trzeba z logów dockera wydobyć, ale może ogarnę, by były jakieś zamokowane.
+User: admin
+Password: adminadminadmin
+
+Wybieramy "Upload template" (w panelu po lewej stronie), wskaujzmey template flow_template.xml z katalogu nifi w repo, uploadujemy. Potem przeciągamy z górnego paska "Template" i wybieramy FlowTemplate. Przydatne opcje:
+- na procesorze można wybrać "Run once"
+- jak się nam coś zakolejkuje w połączeniu można wybrać "List queue" i poooglądać jsony
+- oczywście jest też empty queue
 
 
 Kafka też już działa
