@@ -23,3 +23,8 @@ Sprawdzenie, że kafka działa:
 4. `kafka-console-consumer.sh --topic quickstart-events --from-beginning --bootstrap-server localhost:9092` i voila!
 
 Spark streaming też chyba działa, można się do niego dostać po zwykłym http http://localhost:8888/
+
+Hadoop namenode:
+  https://localhost:9870
+Hadoop datanode:
+  https://localhost:9864
