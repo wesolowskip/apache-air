@@ -52,13 +52,24 @@ services:
     container_name: mock-air-api
     ports:
     - "5000:1337"
+
   nifi:
     build: nifi
-    container_name: bigdata-nifi
+    container_name: nifi
     ports:
-    - "8443:8443" # https://docs.docker.com/compose/compose-file/compose-file-v3/#ports Pamietajmy o cudzyslowach!
+    - "8443:8443"
     volumes:
     - ./nifi/nifi-mount:/home/user
+    environment:
+    - SINGLE_USER_CREDENTIALS_USERNAME=admin
+    - SINGLE_USER_CREDENTIALS_PASSWORD=adminadminadmin
+
+  nifi-registry:
+    container_name: nifi-registry
+    image: apache/nifi-registry
+    ports:
+        - "18080:18080"
+  
 
   # https://github.com/bitnami/bitnami-docker-kafka/issues/159
   kafka:
