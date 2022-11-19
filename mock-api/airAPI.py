@@ -9,7 +9,6 @@ import json
 from functools import wraps
 import traceback
 import tqdm
-import warnings
 
 """
 Instruction:
@@ -41,15 +40,6 @@ def error_handler(func):
                     return json.load(file)
             except FileNotFoundError:
                 return []
-
-    return with_except
-
-
-def deprecated_function(func):
-    @wraps(func)
-    def with_except(*args, **kwargs):
-        warnings.warn(f"Function {func.__name__} is deprecated! ", DeprecationWarning)
-        return func(*args, **kwargs)
 
     return with_except
 
@@ -95,16 +85,6 @@ def save_measurements(measurements, sensor_idx):
         json.dump(measurements, file)
 
 
-def perform_measurement_update_if_needed(sensor_id):
-    if check_measurement_update(sensor_id):
-        measurement = get_sensors_measurements(sensor_id)
-        save_measurements(measurement, sensor_id)
-        print(f"Updated sensor: {sensor_id}")
-    else:
-        print(f"Sensor {sensor_id} did not need to be updated")
-
-
-@deprecated_function
 def check_update():
     maxes = Counter()
     for file in glob.glob(os.path.join(variables['measurements_dir'], '*json')):
@@ -123,23 +103,6 @@ def check_update():
     return dates_flag and not read_save_control()['saving']
 
 
-def check_measurement_update(sensor_id):
-    measurements = read_measurements_from_file(sensor_id)
-    if 'error' in measurements:  # If file does not exist and it should
-        sensors_ids = read_sensors_ids()
-        return int(sensor_id) in sensors_ids  # we download it
-
-    if measurements and measurements['values']:
-        dates = [datetime.strptime(row['date'], '%Y-%m-%d %H:%M:%S') for row in measurements['values']]
-        max_date = max(dates)
-    else:
-        max_date = datetime.strptime('1970-01-01 00:00:00', '%Y-%m-%d %H:%M:%S')
-    now = datetime.now()
-    dates_flag = (now - max_date).seconds / 3600 > 1.002  # hour and 7.2seconds
-    return dates_flag
-
-
-@deprecated_function
 def perform_update_if_needed():
     if check_update():
         save_save_control({'saving': True})
@@ -147,7 +110,6 @@ def perform_update_if_needed():
         save_save_control({'saving': False})
 
 
-@deprecated_function
 def read_save_control():
     try:
         with open(variables['save_control_path'], 'r') as file:
@@ -156,7 +118,6 @@ def read_save_control():
         return {'saving': False}
 
 
-@deprecated_function
 def save_save_control(save_control):
     dir_name = os.path.dirname(variables['save_control_path'])
     if not os.path.exists(dir_name): 
@@ -165,17 +126,8 @@ def save_save_control(save_control):
         return json.dump(save_control, file)
 
 
-def read_measurements_from_file(sensor_id):
-    try:
-        with open(os.path.join(variables['measurements_dir'], f'{sensor_id}.json'), 'r') as file:
-            return json.load(file)
-    except FileNotFoundError:
-        return {'error': f'sensor {sensor_id} not found'}
-
-
 def save_all():
     stations = get_stations()
-    all_sensor_ids = []
     save_stations(stations)
     for station in tqdm.tqdm(stations):
         # time.sleep(0.1)
@@ -183,28 +135,10 @@ def save_all():
         save_sensors(sensors, station['id'])
         for sensor in sensors:
             # time.sleep(0.1)
-            all_sensor_ids.append(sensor['id'])
             measurements = get_sensors_measurements(sensor['id'])
             save_measurements(measurements, sensor['id'])
-    return all_sensor_ids
-
-
-def read_sensors_ids():
-    if not os.path.exists(variables['sensor_ids_list']):
-        raise FileNotFoundError("You have to first launch airAPI.py")
-    with open(variables['sensor_ids_list'], 'r') as file:
-        return json.load(file)
-
-
-def save_sensors_ids(ids):
-    with open(variables['sensor_ids_list'], 'w') as file:
-        json.dump(ids, file)
 
 
 if __name__ == '__main__':
-<<<<<<< HEAD:mockAPI/airAPI.py
-    save_all()
-=======
     save_save_control({'saving': False})
     perform_update_if_needed()
->>>>>>> bf150cac00083e84bc7363cd017bc98cce17a4e8:mock-api/airAPI.py
