@@ -58,8 +58,8 @@ services:
     container_name: nifi
     ports:
       - "8443:8443"
-    volumes:
-      - ./nifi/nifi-mount:/home/user
+    depends_on:
+      - nifi-registry
     environment:
       - SINGLE_USER_CREDENTIALS_USERNAME=admin
       - SINGLE_USER_CREDENTIALS_PASSWORD=adminadminadmin
@@ -69,6 +69,9 @@ services:
     image: apache/nifi-registry
     ports:
       - "18080:18080"
+    volumes: 
+      - ./nifi-registry/database:/opt/nifi-registry/nifi-registry-current/database 
+      - ./nifi-registry/flow_storage:/opt/nifi-registry/nifi-registry-current/flow_storage
 
   namenode:
     image: bde2020/hadoop-namenode:2.0.0-hadoop3.2.1-java8
