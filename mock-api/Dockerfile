@@ -10,4 +10,5 @@ COPY . .
 RUN apt update && apt install tzdata -y
 ENV TZ="Europe/Warsaw"
 
+RUN python3 airAPI.py
 CMD [ "python3", "mockAPI.py"]
