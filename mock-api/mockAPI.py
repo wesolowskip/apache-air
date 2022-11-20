@@ -23,12 +23,14 @@ def print_log(log):
 
 @app.route('/station/findAll', methods=['GET'])
 def send_stations():
+    perform_update_if_needed()
     with open(variables['stations_path'], 'r') as file:
         return jsonify(json.load(file))
 
 
 @app.route('/station/sensors/<station_id>', methods=['GET'])
 def send_sensors(station_id):
+    perform_update_if_needed()
     try:
         with open(os.path.join(variables['sensors_dir'], f'{station_id}.json'), 'r') as file:
             return jsonify(json.load(file))
@@ -45,11 +47,12 @@ def add_noise(value, mean, var):
 
 @app.route('/data/getData/<sensor_id>', methods=['GET'])
 def send_measurements(sensor_id):
-    airAPI.perform_measurement_update_if_needed(sensor_id)
-
-    measurements = airAPI.read_measurements_from_file(sensor_id)
-    if 'error' in measurements:
-        return jsonify(measurements)
+    perform_update_if_needed()
+    try:
+        with open(os.path.join(variables['measurements_dir'], f'{sensor_id}.json'), 'r') as file:
+            measurements = json.load(file)
+    except FileNotFoundError:
+        return jsonify({'error': f'sensor {sensor_id} not found'})
 
     key = measurements['key']
     mean, var = variables[f'{key}_mean'], variables[f'{key}_var']
