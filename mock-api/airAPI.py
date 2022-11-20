@@ -202,9 +202,4 @@ def save_sensors_ids(ids):
 
 
 if __name__ == '__main__':
-<<<<<<< HEAD:mockAPI/airAPI.py
     save_all()
-=======
-    save_save_control({'saving': False})
-    perform_update_if_needed()
->>>>>>> bf150cac00083e84bc7363cd017bc98cce17a4e8:mock-api/airAPI.py
