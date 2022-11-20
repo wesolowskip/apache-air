@@ -2,6 +2,7 @@ stations_path: data/stations.json
 measurements_dir: data/measurements
 sensors_dir: data/sensors
 save_control_path: data/save_control.json
+sensor_ids_list: data/sensors_ids.json
 stations_url: 'https://api.gios.gov.pl/pjp-api/rest/station/findAll'
 sensors_data_url: 'https://api.gios.gov.pl/pjp-api/rest/station/sensors/'
 sensors_measurements_url: 'https://api.gios.gov.pl/pjp-api/rest/data/getData/'
