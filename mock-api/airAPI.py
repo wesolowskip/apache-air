@@ -140,5 +140,5 @@ def save_all():
 
 
 if __name__ == '__main__':
-    save_save_control({'saving': False})
-    perform_update_if_needed()
+    save_all()
+

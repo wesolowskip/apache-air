@@ -6,7 +6,8 @@ from flask import jsonify, Flask
 import json
 import numpy as np
 from datetime import datetime
-from airAPI import perform_update_if_needed, save_save_control
+import airAPI
+
 variables = helpers.read_project_variables()
 app = Flask(__name__)
 
@@ -62,5 +63,4 @@ def send_measurements(sensor_id):
 
 
 if __name__ == '__main__':
-    save_save_control({'saving': False})
     app.run(port=variables['port'], host="0.0.0.0")
