@@ -7,10 +7,14 @@ Nifi stoi na https://localhost:8443/nifi
 User: admin
 Password: adminadminadmin
 
-Wybieramy "Upload template" (w panelu po lewej stronie), wskaujzmey template flow_template.xml z katalogu nifi w repo, uploadujemy. Potem przeciągamy z górnego paska "Template" i wybieramy FlowTemplate. Przydatne opcje:
-- na procesorze można wybrać "Run once"
-- jak się nam coś zakolejkuje w połączeniu można wybrać "List queue" i poooglądać jsony
-- oczywście jest też empty queue
+Docker compose up automatycznie podłaczy nifi do kontenra nifi-registry. Nifi zaciągnie odpowiedni flow (skrypt do tego to `nifi/flow_setup.sh`).
+Jesli chcemy wprowadzić zmiany we flowie to robimy:
+- w Nifi mamy jeden główny bloczek z całym flowem (`FlowPG`), wchodzimy w niego i dostajemy dwa bloczki, które dotyczą powietrza i pogody
+- Tutaj wprowadzamy zmiany, jakie chcemy
+- Wracamy w górę (strzałka w górę w lewnym panelu), tak by widzieć tylko 1 bloczek na planszy. Klikamy kontrola wersji na nim, komitujemy
+- W skrypcie `nifi/flow_setup.sh` podbijamy wersję w jsonie `VERSION_CONTROL`, by po postawieniu kontener ładował odpowiednią wersję
+
+Szczegóły wersji można sprawdzić na http://localhost:18080/nifi-registry (tu stoi repo z flowem). Pamiętamy, by na gita zakomitować pliki z katalogu `nifi-registry`!!!!
 
 
 Kafka też już działa
