@@ -39,7 +39,7 @@ def add_noise(value, mean, var):
     if value is None:
         return None
     randomized_value = value + np.random.normal(mean, var)
-    return max(0, randomized_value)
+    return np.abs(randomized_value)
 
 
 @app.route('/data/getData/<sensor_id>', methods=['GET'])
