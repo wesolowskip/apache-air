@@ -32,3 +32,16 @@ Hadoop namenode:
   https://localhost:9870
 Hadoop datanode:
   https://localhost:9864
+  
+  
+Żeby podejrzeć parquety:
+
+1. Odpalamy namenode'a w terminalu (najłatwiej z plugina vscode)
+2. hadoop dfs -ls /tmp listuje katalogi z danymi potem np. hadoop dfs -ls /tmp/WEATHERRESULTS listuje pliki
+3. Kopiujemy wybrany plik do normalnego filesystemu namenode'a np : hadoop -get /tmp/WEATHERRESULT/nazwa_pliku /tmp/nazwa_pliku
+4. Kopiujemy z namenode'a do naszej maszyny np: docker cp namenode:/tmp/nazwa_pliku nazwa_pliku
+5. Odpalamy pythona3 i wywołujemy import pandas as pd -> pd.read_parquet('nazwa_pliku')
+6. pandas się wywala i mówi że trzeba coś tam zainstalować żeby używać read_parquet
+7. install tego przez co wywala
+8. read_parquet ponownie
+9. koniec
