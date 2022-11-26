@@ -23,7 +23,7 @@ def test_random_results():
     first_date = first_response['values'][0]['date']
 
     second_request = f'{URL}/data/getData/50'
-    print(f'First request to {second_request}')
+    print(f'Second request to {second_request}')
 
     second_response = requests.get(second_request).json()
     try:
