@@ -1,7 +1,10 @@
+
 # apache-air
 
 ```docker compose up```
 
+
+## Nifi
 Nifi stoi na https://localhost:8443/nifi
 
 User: admin
@@ -17,15 +20,19 @@ Jesli chcemy wprowadzić zmiany we flowie to robimy:
 Szczegóły wersji można sprawdzić na http://localhost:18080/nifi-registry (tu stoi repo z flowem). Pamiętamy, by na gita zakomitować pliki z katalogu `nifi-registry`!!!!
 
 
-Kafka też już działa
+## Kafka
 
 Sprawdzenie, że kafka działa:
 
-1. Attachujemy shella do kontenera z kafką
-2. `kafka-topics.sh --create --topic quickstart-events --bootstrap-server localhost:9092`
-3. `kafka-console-producer.sh --topic quickstart-events --bootstrap-server localhost:9092` i wpisujemy jakieś śmieci
-4. `kafka-console-consumer.sh --topic quickstart-events --from-beginning --bootstrap-server localhost:9092` i voila!
+1. Attachujemy shella do kontenera z kafką po jego uruchomieniu
 
+2. `kafka-console-consumer --topic air-data --from-beginning --bootstrap-server localhost:9092`
+
+3. `kafka-console-consumer --topic weather-data --from-beginning --bootstrap-server localhost:9092`
+
+Instrukcje 2. i 3. powinny printować na bieżąco dane przychodzące do kolejek z NiFi
+
+## Spark
 Spark streaming też chyba działa, można się do niego dostać po zwykłym http http://localhost:8888/
 
 Hadoop namenode:
@@ -33,7 +40,8 @@ Hadoop namenode:
 Hadoop datanode:
   https://localhost:9864
   
-  
+
+## Misc
 Żeby podejrzeć parquety:
 
 1. Odpalamy namenode'a w terminalu (najłatwiej z plugina vscode)
@@ -45,3 +53,4 @@ Hadoop datanode:
 7. install tego przez co wywala
 8. read_parquet ponownie
 9. koniec
+
