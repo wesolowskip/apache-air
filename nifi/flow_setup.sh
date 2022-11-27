@@ -16,7 +16,7 @@ VERSION_CONTROL="
 		\"bucketId\": \"eee03c57-7e3c-4bba-9818-f8f9ba231bfd\",
 		\"flowId\": \"0dcae8cd-d4ad-42d5-a666-84fcd4886551\",
 		\"registryId\": $REGISTRY_ID,
-		\"version\": 9
+		\"version\": 10
 	}"
 
 curl "https://$(hostname):8443/nifi-api/process-groups/root/process-groups" -k -X POST -H "Content-Type: application/json" -H "Authorization: Bearer $TOKEN" -d "{\"component\": {$VERSION_CONTROL}, \"revision\": {\"version\": 0}}"
