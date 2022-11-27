@@ -1,7 +1,11 @@
 
 # apache-air
 
+## Setup
+
 ```docker compose up```
+
+Potem wchodzimy w NiFi (patrz niżej) i na głównej ProcessGroupie PPM "Enable all controller services" i "Start".
 
 
 ## Nifi
@@ -32,8 +36,7 @@ Sprawdzenie, że kafka działa:
 
 Instrukcje 2. i 3. powinny printować na bieżąco dane przychodzące do kolejek z NiFi
 
-## Spark
-Spark streaming też chyba działa, można się do niego dostać po zwykłym http http://localhost:8888/
+## Hadoop
 
 Hadoop namenode:
   https://localhost:9870
@@ -41,7 +44,6 @@ Hadoop datanode:
   https://localhost:9864
   
 
-## Misc
 Żeby podejrzeć parquety:
 
 1. Odpalamy namenode'a w terminalu (najłatwiej z plugina vscode)
@@ -53,4 +55,3 @@ Hadoop datanode:
 7. install tego przez co wywala
 8. read_parquet ponownie
 9. koniec
-
