@@ -17,6 +17,7 @@ services:
     environment:
       - SINGLE_USER_CREDENTIALS_USERNAME=admin
       - SINGLE_USER_CREDENTIALS_PASSWORD=adminadminadmin
+      - OPENWEATHER_API_KEY=${OPENWEATHER_API_KEY}
 
   nifi-registry:
     container_name: nifi-registry

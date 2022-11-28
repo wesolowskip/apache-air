@@ -3,6 +3,18 @@
 
 ## Setup
 
+Należy najpierw utworzyć plik w katalogu głównym repo `.env` i w nim wstawić linijkę:
+
+```
+OPENWEATHER_API_KEY=<klucz api>
+```
+
+Plik nie jest śledzony przez gita!
+
+Klucz należy wziąć z https://home.openweathermap.org/api_keys.
+
+Potem:
+
 ```docker compose up```
 
 Potem wchodzimy w NiFi (patrz niżej) i na głównej ProcessGroupie PPM "Enable all controller services" i "Start".
