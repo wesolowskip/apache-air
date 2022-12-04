@@ -1,6 +1,9 @@
 
 # apache-air
 
+
+**Templaty NiFi znajdują się w katalogu nifi-templates.**
+
 ## Setup
 
 Należy najpierw utworzyć plik w katalogu głównym repo `.env` i w nim wstawić linijkę:
