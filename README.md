@@ -6,6 +6,8 @@
 
 ## Setup
 
+**UWAGA** Docker może się nie lubić z Windowsem!!!
+
 Należy najpierw utworzyć plik w katalogu głównym repo `.env` i w nim wstawić linijkę:
 
 ```
@@ -21,6 +23,9 @@ Potem:
 ```docker compose up```
 
 Potem wchodzimy w NiFi (patrz niżej) i na głównej ProcessGroupie PPM "Enable all controller services" i "Start".
+
+### Problemy z Windowsem
+W przypadku różnego rodzaju problemów, w szczególności rzeczy pokroju "file not found" w NiFi (skrypty, które są kopiowane do kontenera) należy się upewnić, czy zakończenia linii w tych plikach mamy faktycznie LF. Jeśli są CRLF to trzeba zmienić. Tyczy się to wszystkich plików `.sh` w repo. Może też pomóc stawianie kontenerów z opcją `--force-recreate` czy jakoś tak.
 
 
 ## Nifi
@@ -70,3 +75,19 @@ Hadoop datanode:
 7. install tego przez co wywala
 8. read_parquet ponownie
 9. koniec
+
+## Spark
+
+Póki co jest jeden master i 2 workernody. Workernody mają po 1 CPU i 1GB RAM. Jeśli trzeba zwiększyć, to w `docker-compose.yaml` odpowiednio zmieniamy.
+Sparki są na portach (localhost):
+
+- 8888 (master),
+- 8889, 8890 (workery).
+
+### Dostęp ze Sparka do hadoopa
+
+Żeby zweryfikować, czy mamy dostęp do parquetów z hadoopa:
+
+1. Attachujemy shella do hadoop namenoda, robimy `hdfs dfs -ls /tmp/AIRRESULTS` lub `hdfs dfs -ls /tmp/WEATHERRESULTS`. Upewniamy się, że mamy chociaż 1 parquet.
+2. Attachujemy shella do któregoś z workerów sparka. Odpalamy sparka `/spark/bin/pyspark`.
+3. W konsoli sparka wpisujemy `spark.read.parquet("hdfs://namenode:8020/tmp/AIRRESULTS")` (albo z `WEATHERRESULTS`). Oczywiście jak chcemy konkretny parquet to można dospecyfikować ścieżkę. Możemy też zrobić na tej ramce `.collect()`. Voilà!
