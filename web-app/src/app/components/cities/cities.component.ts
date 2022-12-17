@@ -1,16 +1,15 @@
 import { Component, OnInit } from '@angular/core';
-import { MatSort } from '@angular/material/sort';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { OpenAQService } from 'src/app/api/open-aq.service';
-import { OpenAQResponse, CommonHelper, Parameter, SortEvent, SortDirection } from 'src/app/helpers/common-helper';
-import { Country } from 'src/app/models/country';
-import { PollutionGridElement } from 'src/app/models/pollution-grid-element';
-import { Column } from 'src/app/models/column';
-import { GridService } from 'src/app/services/grid.service';
-import { Measurement } from 'src/app/models/measurement';
-import { MatTableDataSource } from '@angular/material/table';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatTableDataSource } from '@angular/material/table';
 import { TranslateService } from '@ngx-translate/core';
+import { OpenAQService } from 'src/app/api/open-aq.service';
+import { CommonHelper, OpenAQResponse, Parameter, SortEvent } from 'src/app/helpers/common-helper';
+import { Column } from 'src/app/models/column';
+import { Country } from 'src/app/models/country';
+import { Measurement } from 'src/app/models/measurement';
+import { PollutionGridElement } from 'src/app/models/pollution-grid-element';
+import { GridService } from 'src/app/services/grid.service';
 
 export interface Parameters {
   [param: string]: string;
@@ -123,6 +122,8 @@ export class CitiesComponent implements OnInit {
   }
 
   private onGoClick(): void {
+    //SM: 17.12.2022 - tmp
+    return;
     this.setValidators();
     this.resetMeasurementGrid();
 
