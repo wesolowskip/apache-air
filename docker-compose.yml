@@ -112,3 +112,10 @@ services:
       - SPARK_SSL_ENABLED=no
     ports:
       - '8888:8080'
+  
+  web-app:
+    image: js/angular:1.0.0
+    container_name: web-app
+    build: web-app
+    ports:
+      - 4200:80
