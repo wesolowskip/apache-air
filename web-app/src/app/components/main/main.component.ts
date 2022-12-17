@@ -185,6 +185,8 @@ export class MainComponent implements OnInit {
   }
 
   private onGoClick(): void {
+    //SM: 17.12.2022 - tmp
+    return;
     this.setValidators();
     this.resetGrids();
 
