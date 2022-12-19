@@ -91,3 +91,15 @@ Sparki są na portach (localhost):
 1. Attachujemy shella do hadoop namenoda, robimy `hdfs dfs -ls /tmp/AIRRESULTS` lub `hdfs dfs -ls /tmp/WEATHERRESULTS`. Upewniamy się, że mamy chociaż 1 parquet.
 2. Attachujemy shella do któregoś z workerów sparka. Odpalamy sparka `/spark/bin/pyspark`.
 3. W konsoli sparka wpisujemy `spark.read.parquet("hdfs://namenode:8020/tmp/AIRRESULTS")` (albo z `WEATHERRESULTS`). Oczywiście jak chcemy konkretny parquet to można dospecyfikować ścieżkę. Możemy też zrobić na tej ramce `.collect()`. Voilà!
+
+## Cassandra
+
+Cassandra chwilę startuje (< 1min). Kiedy jest gotowa, to kontener init-cassandra się wyłącza.
+Żeby podejrzeć tabelkę, można np.:
+
+1. Attachować się do kontenera cassandry
+2. `cqlsh`
+3. `describe tables;`
+4. `SELECT * FROM apache_air.batch_views;`
+
+Schemat tabelek jest w pliku `cassandra/schema.cql`!

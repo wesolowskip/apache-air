@@ -156,3 +156,19 @@ services:
     build: web-app
     ports:
       - 4200:80
+
+  cassandra:
+      image: cassandra:latest
+      container_name: cassandra
+      ports:
+        - "9042:9042"
+
+  init-cassandra:
+      container_name: init-cassandra
+      image: cassandra:latest
+      depends_on:
+        - cassandra
+      volumes:
+        - ./cassandra/schema.cql:/schema.cql
+        - ./cassandra/init.sh:/init.sh
+      command: /init.sh
