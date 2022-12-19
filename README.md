@@ -100,6 +100,6 @@ Cassandra chwilę startuje (< 1min). Kiedy jest gotowa, to kontener init-cassand
 1. Attachować się do kontenera cassandry
 2. `cqlsh`
 3. `describe tables;`
-4. `SELECT * FROM apache_air.batch_views`
+4. `SELECT * FROM apache_air.batch_views;`
 
 Schemat tabelek jest w pliku `cassandra/schema.cql`!
