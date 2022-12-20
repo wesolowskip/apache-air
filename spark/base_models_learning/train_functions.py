@@ -64,7 +64,7 @@ def train_models(df, particles=particles, models_dir='/home/base_models_learning
         .filter(summary.model_type=='GB')\
         .drop('model_type')\
         .select('*', sf.lit(now).alias("timestamp"))\
-        .withColumnRenamed("MAE", "mae")\
+        .withColumnRenamed("MRE", "mre")\
         .write\
         .format("org.apache.spark.sql.cassandra")\
         .mode("append")\
@@ -104,7 +104,7 @@ def train_model(df, particle, all_particles, type_):
         sf.col(f'{particle}_future'),
         sf.col('prediction'),
         sf.abs((sf.col('prediction') -
-                sf.col(f'{particle}_future'))/sf.col(f'{particle}_future')).alias('MAE'),
+                sf.col(f'{particle}_future'))/sf.col(f'{particle}_future')).alias('MRE'),
         sf.when(preds.prediction < lower_threshold, 0).when(
             upper_threshold <= preds.prediction, 2)
         .otherwise(1).alias('interval'))
@@ -112,20 +112,20 @@ def train_model(df, particle, all_particles, type_):
     general_summary = summary\
         .dropna()\
         .select(
-            sf.mean('MAE').alias('MAE')
+            sf.mean('MRE').alias('MRE')
         ).withColumn('model_type', sf.lit(type_))\
         .withColumn('particle', sf.lit(particle))
 
     summary = summary.dropna()\
         .groupBy('interval')\
-        .agg(sf.mean('MAE').alias('MAE'))
+        .agg(sf.mean('MRE').alias('MRE'))
 
-    mean_mae = summary.select(sf.mean('MAE')).collect()[0][0]
+    mean_mre = summary.select(sf.mean('MRE')).collect()[0][0]
     intervals = spark.range(3).withColumnRenamed('id', 'interval')
 
     summary = summary.join(intervals, summary.interval == intervals.interval, 'right')\
         .drop(summary.interval)\
-        .fillna(mean_mae)\
+        .fillna(mean_mre)\
         .withColumn('model_type', sf.lit(type_))\
         .withColumn('particle', sf.lit(particle))
     return summary, general_summary, model
