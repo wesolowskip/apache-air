@@ -1,7 +1,7 @@
 
 from pyspark.sql import SparkSession
 from pyspark.sql.types import  StructType, StructField, StringType, LongType, DoubleType, IntegerType, ArrayType
-from pyspark.sql.functions import expr, from_json, col, concat, round
+from pyspark.sql.functions import expr, from_json, col, concat, round, lit, year, month, dayofweek, hour
 from pyspark.streaming import StreamingContext
 from pyspark.ml.regression import GBTRegressionModel
 from pyspark.ml.feature import VectorAssembler
@@ -99,10 +99,10 @@ joined_df = watermarked_air.alias("air").join(watermarked_weather.alias("weather
     air.lat = weather.lat
 """))
 
-no2_table = joined_df.filter("`sensor.param.code` = 'NO2'").select("*")
-o3_table = joined_df.filter("`sensor.param.code` = 'NO2'").select("*")
-pm25_table = joined_df.filter("`sensor.param.code` = 'NO2'").select("*")
-pm10_table = joined_df.filter("`sensor.param.code` = 'NO2'").select("*")
+no2_table = joined_df.filter("`sensor.param.code` = 'NO2'").select("*", lit(0).alias("snow_1h"), lit(0).alias("rain_1h"), month("`measurement.date`").alias("month"),hour("`measurement.date`").alias("hour"), dayofweek("`measurement.date`").alias("weekday"))
+o3_table = joined_df.filter("`sensor.param.code` = '03'").select("*", lit(0).alias("snow_1h"), lit(0).alias("rain_1h"), month("`measurement.date`").alias("month"),hour("`measurement.date`").alias("hour"), dayofweek("`measurement.date`").alias("weekday"))
+pm25_table = joined_df.filter("`sensor.param.code` = 'PM10'").select("*", lit(0).alias("snow_1h"), lit(0).alias("rain_1h"), month("`measurement.date`").alias("month"),hour("`measurement.date`").alias("hour"), dayofweek("`measurement.date`").alias("weekday"))
+pm10_table = joined_df.filter("`sensor.param.code` = 'PM25'").select("*", lit(0).alias("snow_1h"), lit(0).alias("rain_1h"), month("`measurement.date`").alias("month"),hour("`measurement.date`").alias("hour"), dayofweek("`measurement.date`").alias("weekday"))
 # no2_table_out = no2_table \
 #     .writeStream \
 #     .outputMode("append") \
@@ -115,15 +115,11 @@ modelpm10 = GBTRegressionModel.load("/home/base_models_learning/2022_12_17_03_58
 modelpm25 = GBTRegressionModel.load("/home/base_models_learning/2022_12_17_03_58_15_PM25.model")
 print(modeln02.columns)
 
-assemblern02 = VectorAssembler(inputCols=no2_table.columns, outputCol="features")
-assemlero3 = VectorAssembler(inputCols=o3_table.columns, outputCol="features")
-assemblerpm25 = VectorAssembler(inputCols=pm25_table.columns, outputCol="features")
-assemblerpm10 = VectorAssembler(inputCols=pm10_table.columns, outputCol="features")
-
-final_df_n02 = assemblern02.transform(no2_table)
-final_df_o3 = assemlero3.transform(o3_table)
-final_df_pm25 = assemblerpm25.transform(pm25_table)
-final_df_pm10 = assemblerpm10.transform(pm10_table)
+assembler = VectorAssembler(inputCols=["`measurement.value`", "`main.temp`", "`main.pressure`", "`main.humidity`", "`wind.speed`", "`wind.deg`", "`clouds.all`", "snow_1h", "rain1_h", "month", "hour", "weekday"], outputCol="features")
+final_df_n02 = assembler.transform(no2_table)
+final_df_o3 = assembler.transform(o3_table)
+final_df_pm25 = assembler.transform(pm25_table)
+final_df_pm10 = assembler.transform(pm10_table)
 
 
 print(modeln02.predict(final_df_n02))
