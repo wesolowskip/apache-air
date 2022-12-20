@@ -5,7 +5,8 @@ from pyspark.sql import Window
 from pyspark.context import SparkContext
 from pyspark.sql.session import SparkSession
 sc = SparkContext.getOrCreate()
-spark = SparkSession(sc)
+spark = SparkSession.builder.config(
+    "spark.cassandra.connection.host", "cassandra").getOrCreate()
 
 import os
 import datetime
@@ -20,8 +21,8 @@ def union_all(dfs):
     return df
 
 
-def train_models(df, particles=particles, models_dir='base_models_learning/models',
-                 summary_dir='base_models_learning/summary', types=('RF', 'GB')):
+def train_models(df, particles=particles, models_dir='/home/base_models_learning/models',
+                 summary_dir='summary', types=('RF', 'GB')):
     models = dict()
     summaries = []
     general_summaries = []
@@ -37,11 +38,11 @@ def train_models(df, particles=particles, models_dir='base_models_learning/model
 
     general_summary = union_all(general_summaries)
 
-    w = Window.partitionBy(['particle'])
-    general_summary = general_summary\
-        .withColumn('min_MAE', sf.min('MAE').over(w))\
-        .filter(sf.col('MAE') == sf.col('min_MAE'))\
-        .drop('min_MAE')
+    #w = Window.partitionBy(['particle'])
+    #general_summary = general_summary\
+    #    .withColumn('min_MAE', sf.min('MAE').over(w))\
+    #    .filter(sf.col('MAE') == sf.col('min_MAE'))\
+    #    .drop('min_MAE')
     now = datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
     save_summary(general_summary, os.path.join(
         summary_dir,  f'{now}_general_summary.csv'))
@@ -56,6 +57,19 @@ def train_models(df, particles=particles, models_dir='base_models_learning/model
     summary = union_all(summaries)
     save_summary(summary, os.path.join(summary_dir, f'{now}_summary.csv'))
 
+    now = '2022_12_19_14_46_40'
+    y, m, d, h, M, s = now.split('_')
+    now = '-'.join([y, m, d]) + ' ' + ':'.join([h, M, s])
+    summary\
+        .filter(summary.model_type=='GB')\
+        .drop('model_type')\
+        .select('*', sf.lit(now).alias("timestamp"))\
+        .withColumnRenamed("MAE", "mae")\
+        .write\
+        .format("org.apache.spark.sql.cassandra")\
+        .mode("append")\
+        .options(table="batch_views", keyspace="apache_air")\
+        .save()
 
 def save_model(model, filename):
     if not os.path.exists(os.path.dirname(filename)):
@@ -64,19 +78,17 @@ def save_model(model, filename):
 
 
 def save_summary(summary, filename):
-    if not os.path.exists(os.path.dirname(filename)):
-        os.mkdir(os.path.dirname(filename))
-    summary.toPandas().to_csv(filename, index=False)
+    summary.write.option("header", True)\
+        .csv(f"hdfs://namenode:8020/{filename}")
 
 
 def train_model(df, particle, all_particles, type_):
     particles_to_drop = [
         particle_ for particle_ in all_particles if particle_ != particle]
     cols_to_drop = [f'{particle}_present' for particle in particles_to_drop] + \
-        [f'{particle}_feature' for particle in particles_to_drop]
+        [f'{particle}_future' for particle in particles_to_drop]
     df = df.drop(*cols_to_drop)
     df = df.dropna()
-
     assembler = VectorAssembler(inputCols=[col for col in df.columns if col != f'{particle}_future'],
                                 outputCol="features")
     df = assembler.transform(df)

@@ -120,7 +120,7 @@ air = air.alias('air').join(future_air.alias('future_air'), (air.time_present ==
     .select('air.*', *[f'future_air.{particle}_future' for particle in particles])\
     .select('*', sf.to_date(sf.from_unixtime('time_present')).alias('time_date'))\
     .select('*',
-        ((sf.dayofweek('time_date') + sf.lit(5)) % sf.lit(7)).alias('day'),
+        ((sf.dayofweek('time_date') + sf.lit(5)) % sf.lit(7)).alias('weekday'),
         sf.hour('time_date').alias('hour'),
         sf.month('time_date').alias('month'))\
     .drop('time_date')
@@ -135,7 +135,6 @@ weather = weather.select('time',
                          'clouds_all',
                          'snow_1h',
                          'rain_1h',
-                         'dt',
                          sf.round('coord_lon', 4).alias('lng'),
                          sf.round('coord_lat', 4).alias('lat'))
 data = weather.alias('weather').join(air.alias('air'),
@@ -146,4 +145,11 @@ data = data.select(
     *[f'air.{col}' for col in air.columns],
     *[f'weather.{col}' for col in weather.columns if col not in ['time', 'lat', 'lng']]
 )
+data = data.select(*final_columns)
 
+from train_functions import train_models
+df = spark.read.options(inferSchema='True', header='True')\
+    .csv("hdfs://namenode:8020/complete_data.csv")
+df.select(*final_columns)
+train_models(data.union(df), types=('GB',))
+sc.stop()
