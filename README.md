@@ -102,4 +102,8 @@ Cassandra chwilę startuje (< 1min). Kiedy jest gotowa, to kontener init-cassand
 3. `describe tables;`
 4. `SELECT * FROM apache_air.batch_views;`
 
-Schemat tabelek jest w pliku `cassandra/schema.cql`!
+Wstawianie np.:
+
+5. `INSERT INTO apache_air.batch_views (timestamp, particle, interval, mre) VALUES ('2011-02-03 04:05', 'NO', 1, 54.34);`
+
+Schemat tabelek jest w pliku `cassandra/schema.cql`

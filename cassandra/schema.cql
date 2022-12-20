@@ -11,6 +11,20 @@ CREATE TABLE apache_air.batch_views (
     timestamp timestamp,
     particle text,
     interval tinyint,
-    mae float,
+    mre float,
     PRIMARY KEY((timestamp), particle, interval)
+);
+
+
+-------------- realtime_views ---
+DROP TABLE IF EXISTS apache_air.realtime_views;
+
+CREATE TABLE apache_air.realtime_views (
+    longtitude float,
+    latitude float,
+    station_name text,
+    timestamp timestamp,
+    particle text,
+    prediction float,
+    PRIMARY KEY((longtitude, latitude), timestamp, particle)
 );
