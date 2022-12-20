@@ -5,7 +5,7 @@ spark = SparkSession(sc)
 
 from train_functions import train_models
 df = spark.read.options(inferSchema='True', header='True')\
-    .csv("base_models_learning/complete_data.csv")
+    .csv("hdfs://namenode:8020/complete_data.csv")
 
 train_models(df)
 sc.stop()
