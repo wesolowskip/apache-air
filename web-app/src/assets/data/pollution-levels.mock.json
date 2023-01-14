@@ -1,0 +1,10 @@
+[
+    {
+        "longtitude": 55,
+        "lattitude": 45,
+        "station_name": "station1",
+        "timestamp": "2018-12-10T13:45:00.000Z",
+        "particle": "03",
+        "prediction": 0.4
+    }
+]

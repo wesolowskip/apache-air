@@ -1,13 +1,16 @@
-import { Injectable, APP_INITIALIZER } from '@angular/core';
-import { PollutionGridElement } from '../models/pollution-grid-element';
+import { Injectable } from '@angular/core';
 import { CommonHelper, Parameter, PollutionCategory } from '../helpers/common-helper';
 import { Column } from '../models/column';
+import { PollutionGridElement } from '../models/pollution-grid-element';
 import { Warning } from '../models/warning';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PollutionWarningService {
+  addMeasurements(latestPollutionGridDataSource: PollutionGridElement[]) {
+      throw new Error('Method not implemented.');
+  }
 
   private measurements: PollutionGridElement[] = [];
   private distinctMeasurements: PollutionGridElement[] = [];
@@ -43,11 +46,6 @@ export class PollutionWarningService {
     this.bcWarning = null;
 
     this.warnings = [];
-  }
-
-
-  public addMeasurements(measurments: PollutionGridElement[]): void {
-    this.measurements.push(...measurments);
   }
 
   public addColumns(columns: Column[]): void {

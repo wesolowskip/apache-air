@@ -1,11 +1,11 @@
-import { BrowserModule } from '@angular/platform-browser';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
-import { HttpClientModule, HttpClient } from '@angular/common/http';
+import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { CitiesComponent } from './components/cities/cities.component';
 import { MainComponent } from './components/main/main.component';
-import { CitiesComponent } from './components/cities/cities.component'; 
 
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
@@ -24,21 +24,19 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatToolbarModule } from '@angular/material/toolbar';
 
-import { FormsModule } from '@angular/forms';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
-import { NavigationComponent } from './components/navigation/navigation.component';
 import { LayoutModule } from '@angular/cdk/layout';
-import { PopupComponent } from './components/popup/popup.component';
+import { NavigationComponent } from './components/navigation/navigation.component';
 import { PollutionWarningComponent } from './components/pollution-warning/pollution-warning.component';
+import { PopupComponent } from './components/popup/popup.component';
 
 import { LOCALE_ID } from '@angular/core';
-import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
-import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
-import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
-import { MapComponent } from './components/map/map.component'; 
-
+import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
+import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { MapComponent } from './components/map/map.component';
 
 @NgModule({
   declarations: [
@@ -48,7 +46,7 @@ import { MapComponent } from './components/map/map.component';
     NavigationComponent,
     PopupComponent,
     PollutionWarningComponent,
-    MapComponent
+    MapComponent,
   ],
   entryComponents: [PopupComponent],
   imports: [
@@ -81,7 +79,7 @@ import { MapComponent } from './components/map/map.component';
       }
     }),
     MatSnackBarModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
   ],
   providers: [{provide: LOCALE_ID, useValue: 'pl' }],
   bootstrap: [AppComponent]
