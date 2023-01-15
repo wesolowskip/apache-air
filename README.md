@@ -4,7 +4,7 @@
 
 **Templaty NiFi znajdują się w katalogu nifi-templates.**
 
-## Setup
+## Setup i najważniejsze rzeczy
 
 **UWAGA** Docker może się nie lubić z Windowsem!!!
 
@@ -23,6 +23,12 @@ Potem:
 ```docker compose up```
 
 Potem wchodzimy w NiFi (patrz niżej) i na głównej ProcessGroupie PPM "Enable all controller services" i "Start".
+
+Następnie attachujemy shella do kontenera spark-master i w nim wywołujemy skrypt `/home/base_models_learning/start_streaming.sh`. Pierwsze realtime viewsy pojawią się za kilka minut (postawienie tego joba też chwilę trwa). Kod w pythonie jest w katalogu `REPO/spark/base_models_learning/streaming.py`.
+
+Żeby sprawdzić zawartość cassandry można się attachować do kontenera cassandra i w nim `cqlsh` i potem `SELECT * from apache_air.realtime_views;`.
+
+Poza streamingiem mamy jeszcze skrypt `REPO/spark/base_models_learning/train_base.sh` i odpowiadający `REPO/spark/base_models_learning/train_base.py`.
 
 ### Problemy z Windowsem
 W przypadku różnego rodzaju problemów, w szczególności rzeczy pokroju "file not found" w NiFi (skrypty, które są kopiowane do kontenera) należy się upewnić, czy zakończenia linii w tych plikach mamy faktycznie LF. Jeśli są CRLF to trzeba zmienić. Tyczy się to wszystkich plików `.sh` w repo. Może też pomóc stawianie kontenerów z opcją `--force-recreate` czy jakoś tak.

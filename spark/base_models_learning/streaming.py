@@ -8,6 +8,7 @@ from pyspark.ml.feature import VectorAssembler
 from pyspark.ml import Pipeline
 
 import os
+import shutil
 import json
 print(os.getcwd(), 'PAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAtth')
 
@@ -154,6 +155,8 @@ checkpoint_idx = 0
 def create_final_query(model, table):
     global checkpoint_idx
     checkpoint_idx += 1
+    checkpoint_path = f'/tmp/checkpoint{checkpoint_idx}/'
+    shutil.rmtree(checkpoint_path, ignore_errors=True)
     return model\
         .transform(table)\
         .select(
@@ -165,7 +168,7 @@ def create_final_query(model, table):
             col('prediction')
             )\
         .writeStream\
-        .option("checkpointLocation", f'/tmp/checkpoint{checkpoint_idx}/')\
+        .option("checkpointLocation", checkpoint_path)\
         .format("org.apache.spark.sql.cassandra")\
         .options(table="realtime_views", keyspace="apache_air")\
         .start()
