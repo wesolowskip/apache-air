@@ -26,5 +26,5 @@ CREATE TABLE apache_air.realtime_views (
     timestamp timestamp,
     particle text,
     prediction float,
-    PRIMARY KEY((longtitude, latitude), timestamp, particle)
+    PRIMARY KEY((longtitude, latitude), particle)
 );

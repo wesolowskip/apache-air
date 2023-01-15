@@ -19,6 +19,8 @@ spark = SparkSession \
     .appName("Spark Kafka Streaming") \
     .master("spark://spark-master:7077") \
     .config("spark.jars.packages", "org.apache.spark:spark-sql-kafka-0-10_2.12:3.2.1") \
+    .config("spark.cassandra.connection.host", "cassandra")\
+    .config("spark.scheduler.mode", "FAIR")\
     .getOrCreate()
 
 spark.sparkContext.setLogLevel("ERROR")
@@ -106,15 +108,13 @@ watermarked_air = exploaded_df_air.withWatermark("air_timestamp", "90 seconds")
 
 joined_df = watermarked_air.alias("air").join(watermarked_weather.alias("weather"), expr("""
     air.lon = weather.lon AND
-    air.lat = weather.lat AND
-    air.air_timestamp <= weather.weather_timestamp + interval 1 minute AND
-    weather.weather_timestamp <= air.air_timestamp + interval 3 minutes
+    air.lat = weather.lat
 """))
 
 no2_table = joined_df.filter("sensor_param_code = 'NO2'").select("*", month("measurement_date").alias("month"),hour("measurement_date").alias("hour"), dayofweek("measurement_date").alias("weekday"))
-o3_table = joined_df.filter("sensor_param_code = '03'").select("*", month("measurement_date").alias("month"),hour("measurement_date").alias("hour"), dayofweek("measurement_date").alias("weekday"))
+o3_table = joined_df.filter("sensor_param_code = 'O3'").select("*", month("measurement_date").alias("month"),hour("measurement_date").alias("hour"), dayofweek("measurement_date").alias("weekday"))
 pm25_table = joined_df.filter("sensor_param_code = 'PM10'").select("*", month("measurement_date").alias("month"),hour("measurement_date").alias("hour"), dayofweek("measurement_date").alias("weekday"))
-pm10_table = joined_df.filter("sensor_param_code = 'PM25'").select("*", month("measurement_date").alias("month"),hour("measurement_date").alias("hour"), dayofweek("measurement_date").alias("weekday"))
+pm10_table = joined_df.filter("sensor_param_code = 'PM2.5'").select("*", month("measurement_date").alias("month"),hour("measurement_date").alias("hour"), dayofweek("measurement_date").alias("weekday"))
 
 for col_name, median in medians.items():
     no2_table = no2_table.withColumn(col_name, coalesce(col(col_name), lit(median)))
@@ -123,14 +123,13 @@ for col_name, median in medians.items():
     pm10_table = pm10_table.withColumn(col_name, coalesce(col(col_name), lit(median)))
 
 # no2_table_out.awaitTermination()
-modeln02 = GBTRegressionModel.load("/home/base_models_learning/2023_01_15_16_34_18_GB_NO2.model")
+modelno2 = GBTRegressionModel.load("/home/base_models_learning/2023_01_15_16_34_18_GB_NO2.model")
 modelo3 = GBTRegressionModel.load("/home/base_models_learning/2023_01_15_16_34_18_GB_O3.model")
 modelpm10 = GBTRegressionModel.load("/home/base_models_learning/2023_01_15_16_34_18_GB_PM10.model")
 modelpm25 = GBTRegressionModel.load("/home/base_models_learning/2023_01_15_16_34_18_GB_PM25.model")
-# print(modeln02.columns)
 
 assembler = VectorAssembler(inputCols=["measurement_value", "main_temp", "main_pressure", "main_humidity", "wind_speed", "wind_deg", "clouds_all", "snow_1h", "rain_1h", "month", "hour", "weekday"], outputCol="features")
-final_df_n02 = assembler.setHandleInvalid("skip").transform(no2_table)
+final_df_no2 = assembler.setHandleInvalid("skip").transform(no2_table)
 final_df_o3 = assembler.setHandleInvalid("skip").transform(o3_table)
 final_df_pm25 = assembler.setHandleInvalid("skip").transform(pm25_table)
 final_df_pm10 = assembler.setHandleInvalid("skip").transform(pm10_table)
@@ -141,19 +140,42 @@ final_df_pm10 = assembler.setHandleInvalid("skip").transform(pm10_table)
 #     output_df.select([count(when(isnan(c), c)).alias(c) for c in ["measurement_value", "main_temp", "main_pressure", "main_humidity", "wind_speed", "wind_deg", "clouds_all", "snow_1h", "rain_1h", "month", "hour", "weekday"]]).show()
 #     print(batch_id)
     # print("inside foreachBatch for batch_id:{0}, rows in passed dataframe: {1}".format(batch_id, output_df.count()))
-# final_df_n02.writeStream\
+# final_df_no2.writeStream\
 #          .foreachBatch(batch_write)\
 #          .start()\
 #          .awaitTermination()
 
 
 # # Drukowanie danych
-# test = final_df_n02.writeStream.outputMode("append").format("console").start().awaitTermination()
-
-no2_table_out = modeln02.transform(final_df_n02).writeStream.outputMode("append").format("console").start().awaitTermination()
-# o3_table_out = modelo3.transform(final_df_o3).writeStream.outputMode("append").format("console").start().awaitTermination()
-# pm25_table_out = modelpm25.transform(final_df_pm25).writeStream.outputMode("append").format("console").start().awaitTermination()
-# pm10_table_out = modelpm10.transform(final_df_pm10).writeStream.outputMode("append").format("console").start().awaitTermination()
+# test = final_df_pm25.writeStream.outputMode("append").format("console").start()
 
 
-# ./spark/bin/spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.2.1 --master spark://spark-master:7077 /home/base_models_learning/program.py
+checkpoint_idx = 0
+def create_final_query(model, table):
+    global checkpoint_idx
+    checkpoint_idx += 1
+    return model\
+        .transform(table)\
+        .select(
+            col('station_gegrLon').alias('longtitude'),
+            col('station_gegrLat').alias('latitude'),
+            col('station_name'),
+            col('weather_timestamp').alias('timestamp'),
+            col('sensor_param_code').alias('particle'), 
+            col('prediction')
+            )\
+        .writeStream\
+        .option("checkpointLocation", f'/tmp/checkpoint{checkpoint_idx}/')\
+        .format("org.apache.spark.sql.cassandra")\
+        .options(table="realtime_views", keyspace="apache_air")\
+        .start()
+
+
+pm25_out_query = create_final_query(modelpm25, final_df_pm25)
+no2_out_query = create_final_query(modelno2, final_df_no2)
+o3_out_query = create_final_query(modelo3, final_df_o3)
+pm10_out_query = create_final_query(modelpm10, final_df_pm10)
+
+spark.streams.awaitAnyTermination()
+
+#  /spark/bin/spark-submit --master spark://spark-master:7077 --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.2.1,com.datastax.spark:spark-cassandra-connector_2.12:3.2.0 --conf spark.sql.extensions=com.datastax.spark.connector.CassandraSparkExtensions  /home/base_models_learning/streaming.py
