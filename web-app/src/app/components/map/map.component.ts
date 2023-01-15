@@ -1,5 +1,6 @@
 import { AfterViewInit, Component, ViewChild } from '@angular/core';
 import * as L from 'leaflet';
+import { CassandraService } from 'src/app/services/cassandra.service';
 import { PollutionLevelsService } from 'src/app/services/pollution-levels.service';
 
 const iconRetinaUrl = 'assets/data/images/green_marker.png';
@@ -62,10 +63,16 @@ export class MapComponent implements AfterViewInit {
         tiles.addTo(this.map);
       }
 
-    constructor(private pollutionLevelsService: PollutionLevelsService) {}
+    constructor(private pollutionLevelsService: PollutionLevelsService,
+        private cassandraService: CassandraService) {}
 
     ngAfterViewInit() {
         this.initMap();
         this.pollutionLevelsService.makeCapitalMarkers(this.map);
-    }    
+    }
+
+    public async describe() {
+        await this.cassandraService.insert();
+        await this.cassandraService.get();
+    }
 }

@@ -1,15 +1,15 @@
-import { Component, ViewChild } from '@angular/core';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { Observable } from 'rxjs';
-import { map, first } from 'rxjs/operators';
+import { Component, ViewChild } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatSidenav } from '@angular/material/sidenav';
-import { PopupComponent, PopupData } from '../popup/popup.component';
-import { Parameter, WikiResponse } from 'src/app/helpers/common-helper';
-import { WikiService } from 'src/app/api/wiki.service';
-import { Wiki } from 'src/app/models/wiki';
-import { TranslateService } from '@ngx-translate/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { TranslateService } from '@ngx-translate/core';
+import { Observable } from 'rxjs';
+import { first, map } from 'rxjs/operators';
+import { WikiService } from 'src/app/api/wiki.service';
+import { WikiResponse } from 'src/app/helpers/common-helper';
+import { Wiki } from 'src/app/models/wiki';
+import { PopupComponent, PopupData } from '../popup/popup.component';
 
 @Component({
   selector: 'app-navigation',
@@ -35,7 +35,7 @@ export class NavigationComponent {
     private snackBar: MatSnackBar
   ) {}
 
-    private handleClick(): void {
+    public handleClick(): void {
       this.isHandset$
         .pipe(first())
         .subscribe((isHandset: boolean) => {
@@ -48,7 +48,7 @@ export class NavigationComponent {
         });
     }
 
-    public openPopup(parameter: Parameter): void {
+    public openPopup(parameter: any): void {
       let popupRef: MatDialogRef<PopupComponent, any>;
 
       this.wikiService.getWiki(parameter).toPromise()
@@ -72,12 +72,12 @@ export class NavigationComponent {
         });
     }
 
-    private setPL() {
+    public setPL() {
       this.translate.use('pl');
       localStorage.setItem('airAppLang', 'pl');
     }
 
-    private setEN() {
+    public setEN() {
       this.translate.use('en');
       localStorage.setItem('airAppLang', 'en');
     }
