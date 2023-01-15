@@ -89,21 +89,26 @@ schema_air = StructType([
 value_df_weather = df_weather.selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)", "CAST(timestamp AS TIMESTAMP)")
 json_df_weather = value_df_weather.select(from_json(col("value"),schema_weather).alias("value"), 'timestamp')
 exploaded_df_weather = json_df_weather.select("value.*", "timestamp")
-
-exploaded_df_weather = exploaded_df_weather.withColumn("lon", round("coord_lon", 4))
-exploaded_df_weather = exploaded_df_weather.withColumn("lat", round("coord_lat", 4))
-watermarked_weather = exploaded_df_weather.withWatermark("timestamp", "90 seconds")
+exploaded_df_weather = exploaded_df_weather\
+    .withColumn("lon", round("coord_lon", 4))\
+    .withColumn("lat", round("coord_lat", 4))
+exploaded_df_weather = exploaded_df_weather.withColumn("weather_timestamp", exploaded_df_weather["timestamp"])
+watermarked_weather = exploaded_df_weather.withWatermark("weather_timestamp", "90 seconds")
 
 value_df_air = df_air.selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)", "CAST(timestamp AS TIMESTAMP)")
 json_df_air = value_df_air.select(from_json(col("value"),schema_air).alias("value"), "timestamp")
 exploaded_df_air = json_df_air.select("value.*", "timestamp")
-exploaded_df_air = exploaded_df_air.withColumn("lon", round("station_gegrLon", 4))
-exploaded_df_air = exploaded_df_air.withColumn("lat", round("station_gegrLat", 4))
-watermarked_air = exploaded_df_air.withWatermark("timestamp", "90 seconds")
+exploaded_df_air = exploaded_df_air\
+    .withColumn("lon", round("station_gegrLon", 4))\
+    .withColumn("lat", round("station_gegrLat", 4))
+exploaded_df_air = exploaded_df_air.withColumn("air_timestamp", exploaded_df_air["timestamp"])
+watermarked_air = exploaded_df_air.withWatermark("air_timestamp", "90 seconds")
 
 joined_df = watermarked_air.alias("air").join(watermarked_weather.alias("weather"), expr("""
     air.lon = weather.lon AND
-    air.lat = weather.lat
+    air.lat = weather.lat AND
+    air.air_timestamp <= weather.weather_timestamp + interval 1 minute AND
+    weather.weather_timestamp <= air.air_timestamp + interval 3 minutes
 """))
 
 no2_table = joined_df.filter("sensor_param_code = 'NO2'").select("*", month("measurement_date").alias("month"),hour("measurement_date").alias("hour"), dayofweek("measurement_date").alias("weekday"))
@@ -118,10 +123,10 @@ for col_name, median in medians.items():
     pm10_table = pm10_table.withColumn(col_name, coalesce(col(col_name), lit(median)))
 
 # no2_table_out.awaitTermination()
-modeln02 = GBTRegressionModel.load("/home/base_models_learning/2022_12_17_03_58_15_NO2.model")
-modelo3 = GBTRegressionModel.load("/home/base_models_learning/2022_12_17_03_58_15_O3.model")
-modelpm10 = GBTRegressionModel.load("/home/base_models_learning/2022_12_17_03_58_15_PM10.model")
-modelpm25 = GBTRegressionModel.load("/home/base_models_learning/2022_12_17_03_58_15_PM25.model")
+modeln02 = GBTRegressionModel.load("/home/base_models_learning/2023_01_15_16_34_18_GB_NO2.model")
+modelo3 = GBTRegressionModel.load("/home/base_models_learning/2023_01_15_16_34_18_GB_O3.model")
+modelpm10 = GBTRegressionModel.load("/home/base_models_learning/2023_01_15_16_34_18_GB_PM10.model")
+modelpm25 = GBTRegressionModel.load("/home/base_models_learning/2023_01_15_16_34_18_GB_PM25.model")
 # print(modeln02.columns)
 
 assembler = VectorAssembler(inputCols=["measurement_value", "main_temp", "main_pressure", "main_humidity", "wind_speed", "wind_deg", "clouds_all", "snow_1h", "rain_1h", "month", "hour", "weekday"], outputCol="features")
@@ -130,9 +135,12 @@ final_df_o3 = assembler.setHandleInvalid("skip").transform(o3_table)
 final_df_pm25 = assembler.setHandleInvalid("skip").transform(pm25_table)
 final_df_pm10 = assembler.setHandleInvalid("skip").transform(pm10_table)
 
-# # Drukowanie liczby wierszy:
+# Drukowanie liczby wierszy:
 # def batch_write(output_df, batch_id):
-#     print("inside foreachBatch for batch_id:{0}, rows in passed dataframe: {1}".format(batch_id, output_df.count()))
+#     print(batch_id)
+#     output_df.select([count(when(isnan(c), c)).alias(c) for c in ["measurement_value", "main_temp", "main_pressure", "main_humidity", "wind_speed", "wind_deg", "clouds_all", "snow_1h", "rain_1h", "month", "hour", "weekday"]]).show()
+#     print(batch_id)
+    # print("inside foreachBatch for batch_id:{0}, rows in passed dataframe: {1}".format(batch_id, output_df.count()))
 # final_df_n02.writeStream\
 #          .foreachBatch(batch_write)\
 #          .start()\
@@ -141,7 +149,6 @@ final_df_pm10 = assembler.setHandleInvalid("skip").transform(pm10_table)
 
 # # Drukowanie danych
 # test = final_df_n02.writeStream.outputMode("append").format("console").start().awaitTermination()
-
 
 no2_table_out = modeln02.transform(final_df_n02).writeStream.outputMode("append").format("console").start().awaitTermination()
 # o3_table_out = modelo3.transform(final_df_o3).writeStream.outputMode("append").format("console").start().awaitTermination()
