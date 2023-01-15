@@ -151,11 +151,20 @@ services:
       - '8890:8081'
 
   web-app:
-    image: js/angular:1.0.0
-    container_name: web-app
     build: web-app
+    image: apache-air-web
+    container_name: web-app
     ports:
       - 4200:80
+
+  flask-server:
+    build: server
+    image: flask-server
+    container_name: flask-server
+    depends_on: 
+      - init-cassandra
+    ports:
+      - "5001:1337"
 
   cassandra:
       image: cassandra:latest

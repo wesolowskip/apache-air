@@ -1,13 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormGroup } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableDataSource } from '@angular/material/table';
 import { TranslateService } from '@ngx-translate/core';
 import { OpenAQService } from 'src/app/api/open-aq.service';
-import { CommonHelper, OpenAQResponse, Parameter, SortEvent } from 'src/app/helpers/common-helper';
+import { CommonHelper, Parameter } from 'src/app/helpers/common-helper';
 import { Column } from 'src/app/models/column';
 import { Country } from 'src/app/models/country';
-import { Measurement } from 'src/app/models/measurement';
 import { PollutionGridElement } from 'src/app/models/pollution-grid-element';
 import { GridService } from 'src/app/services/grid.service';
 
@@ -75,159 +74,159 @@ export class CitiesComponent implements OnInit {
   public isLoading: boolean;
 
   ngOnInit() {
-    this.initialize();
+    //this.initialize();
   }
 
-  private initialize(): void {
-    this.setCitiesPollutionForm();
-    this.setCountries();
-  }
+//   private initialize(): void {
+//     this.setCitiesPollutionForm();
+//     this.setCountries();
+//   }
 
-  private setCitiesPollutionForm(): void {
-    this.citiesPollutionForm = new FormGroup({
-      country: new FormControl(''),
-      parameter: new FormControl(''),
-      dateType: new FormControl('now'),
-      fromDate: new FormControl(''),
-      toDate: new FormControl('')
-    });
-  }
+//   private setCitiesPollutionForm(): void {
+//     this.citiesPollutionForm = new FormGroup({
+//       country: new FormControl(''),
+//       parameter: new FormControl(''),
+//       dateType: new FormControl('now'),
+//       fromDate: new FormControl(''),
+//       toDate: new FormControl('')
+//     });
+//   }
 
-  private setCountries(): void {
-    this.openAQService.getCountries().subscribe(
-      (data: OpenAQResponse) => {
-        if (data.results != null) {
-          this.countries = data.results
-            .map(result => new Country(result))
-            .filter(result => result.name != null)
-            .sort(Country.alphabeticalComparator);
-        } else {
-          this.countries = [];
-        }
-      },
-      () => {
-        this.snackBar.open(this.translate.instant('error'), this.translate.instant('errorAction'), {duration: 4000});
-      }
-    );
-  }
+//   private setCountries(): void {
+//     this.openAQService.getCountries().subscribe(
+//       (data: OpenAQResponse) => {
+//         if (data.results != null) {
+//           this.countries = data.results
+//             .map(result => new Country(result))
+//             .filter(result => result.name != null)
+//             .sort(Country.alphabeticalComparator);
+//         } else {
+//           this.countries = [];
+//         }
+//       },
+//       () => {
+//         this.snackBar.open(this.translate.instant('error'), this.translate.instant('errorAction'), {duration: 4000});
+//       }
+//     );
+//   }
 
-  private setMeasurementsRequestDates(): void {
-    if (this.citiesPollutionForm.value.dateType === 'now') {
-      this.fromDate = new Date(new Date().getTime() - (24 * 60 * 60 * 1000)); // 24h from now
-      this.toDate = new Date();
-    } else if (this.citiesPollutionForm.value.dateType === 'dateRange') {
-      this.fromDate = CommonHelper.getFromDateUTC(this.citiesPollutionForm.value.fromDate);
-      this.toDate = CommonHelper.getToDateUTC(this.citiesPollutionForm.value.toDate);
-    }
-  }
+//   private setMeasurementsRequestDates(): void {
+//     if (this.citiesPollutionForm.value.dateType === 'now') {
+//       this.fromDate = new Date(new Date().getTime() - (24 * 60 * 60 * 1000)); // 24h from now
+//       this.toDate = new Date();
+//     } else if (this.citiesPollutionForm.value.dateType === 'dateRange') {
+//       this.fromDate = CommonHelper.getFromDateUTC(this.citiesPollutionForm.value.fromDate);
+//       this.toDate = CommonHelper.getToDateUTC(this.citiesPollutionForm.value.toDate);
+//     }
+//   }
 
-  private onGoClick(): void {
-    //SM: 17.12.2022 - tmp
-    return;
-    this.setValidators();
-    this.resetMeasurementGrid();
+//   private onGoClick(): void {
+//     //SM: 17.12.2022 - tmp
+//     return;
+//     this.setValidators();
+//     this.resetMeasurementGrid();
 
-    if (this.citiesPollutionForm.valid) {
-      this.isLoading = true;
-      this.setMeasurementsRequestDates();
+//     if (this.citiesPollutionForm.valid) {
+//       this.isLoading = true;
+//       this.setMeasurementsRequestDates();
 
-      Promise.all([
-        this.openAQService.getMeasurementsForCountry(
-          this.citiesPollutionForm.value.country,
-          this.citiesPollutionForm.value.parameter,
-          this.fromDate.toISOString() ,
-          this.toDate.toISOString()
-        ).toPromise()
-      ])
-      .then((result: OpenAQResponse[]) => {
-        if (result[0].results != null && result[0].results.length > 0) {
-          this.setMeasurementGrid(result[0]);
-        } else {
-          this.snackBar.open(this.translate.instant('errorNoData'), this.translate.instant('errorAction'), {duration: 4000});
-        }
-      })
-      .catch(() => {
-        this.snackBar.open(this.translate.instant('error'), this.translate.instant('errorAction'), {duration: 4000});
-      })
-      .finally(() => {
-        this.isLoading = false;
-      });
+//       Promise.all([
+//         this.openAQService.getMeasurementsForCountry(
+//           this.citiesPollutionForm.value.country,
+//           this.citiesPollutionForm.value.parameter,
+//           this.fromDate.toISOString() ,
+//           this.toDate.toISOString()
+//         ).toPromise()
+//       ])
+//       .then((result: OpenAQResponse[]) => {
+//         if (result[0].results != null && result[0].results.length > 0) {
+//           this.setMeasurementGrid(result[0]);
+//         } else {
+//           this.snackBar.open(this.translate.instant('errorNoData'), this.translate.instant('errorAction'), {duration: 4000});
+//         }
+//       })
+//       .catch(() => {
+//         this.snackBar.open(this.translate.instant('error'), this.translate.instant('errorAction'), {duration: 4000});
+//       })
+//       .finally(() => {
+//         this.isLoading = false;
+//       });
 
-      this.clearValidators();
-    }
-  }
+//       this.clearValidators();
+//     }
+//   }
 
-  private onDateToggleChange(): void {
-    if (this.citiesPollutionForm.value.dateType === 'now') {
-      this.showDatePicker = false;
-    } else if (this.citiesPollutionForm.value.dateType === 'dateRange') {
-      this.showDatePicker = true;
-    }
-  }
+//   private onDateToggleChange(): void {
+//     if (this.citiesPollutionForm.value.dateType === 'now') {
+//       this.showDatePicker = false;
+//     } else if (this.citiesPollutionForm.value.dateType === 'dateRange') {
+//       this.showDatePicker = true;
+//     }
+//   }
 
-  private setMeasurementGrid(data: OpenAQResponse) {
-    this.resetMeasurementGrid();
+//   private setMeasurementGrid(data: OpenAQResponse) {
+//     this.resetMeasurementGrid();
 
-    const measurements: Measurement[] =  data.results != null
-      ? data.results.map((result: any) => {
-        return new Measurement(result);
-      })
-      : null;
+//     const measurements: Measurement[] =  data.results != null
+//       ? data.results.map((result: any) => {
+//         return new Measurement(result);
+//       })
+//       : null;
 
-    this.measurementGridDataSource = this.gridService.getCitiesGridDataSource(
-      this.citiesPollutionForm.value.parameter,
-      measurements
-    );
+//     this.measurementGridDataSource = this.gridService.getCitiesGridDataSource(
+//       this.citiesPollutionForm.value.parameter,
+//       measurements
+//     );
 
-    this.measurementGridDataSourceAngularMaterial = new MatTableDataSource(this.measurementGridDataSource);
+//     this.measurementGridDataSourceAngularMaterial = new MatTableDataSource(this.measurementGridDataSource);
 
-    this.measurementGridGridColumns = this.gridService.getPollutionGridColumns(this.COLUMNS, this.measurementGridDataSource);
-  }
+//     this.measurementGridGridColumns = this.gridService.getPollutionGridColumns(this.COLUMNS, this.measurementGridDataSource);
+//   }
 
-  private resetMeasurementGrid(): void {
-    this.measurementGridDataSource = [];
-    this.measurementGridDataSourceAngularMaterial = new MatTableDataSource([]);
-    this.measurementGridGridColumns = [];
-  }
+//   private resetMeasurementGrid(): void {
+//     this.measurementGridDataSource = [];
+//     this.measurementGridDataSourceAngularMaterial = new MatTableDataSource([]);
+//     this.measurementGridGridColumns = [];
+//   }
 
-  private onMatSortChange(e: SortEvent) {
-    this.gridService.sort(this.measurementGridDataSourceAngularMaterial, e.active, e.direction);
-    this.measurementGridDataSourceAngularMaterial._updateChangeSubscription();
-  }
+//   private onMatSortChange(e: SortEvent) {
+//     this.gridService.sort(this.measurementGridDataSourceAngularMaterial, e.active, e.direction);
+//     this.measurementGridDataSourceAngularMaterial._updateChangeSubscription();
+//   }
 
-  private onParameterSelected(event): void {
-    const elements: NodeListOf<HTMLElement> = document.querySelectorAll('div.mat-select-value');
-    elements[1].innerHTML = CommonHelper.getFormattedHTMLParameter(event.value);
-  }
+//   private onParameterSelected(event): void {
+//     const elements: NodeListOf<HTMLElement> = document.querySelectorAll('div.mat-select-value');
+//     elements[1].innerHTML = CommonHelper.getFormattedHTMLParameter(event.value);
+//   }
 
-  private setValidators(): void {
-    this.citiesPollutionForm.controls.country.setValidators(Validators.required);
-    this.citiesPollutionForm.controls.parameter.setValidators(Validators.required);
+//   private setValidators(): void {
+//     this.citiesPollutionForm.controls.country.setValidators(Validators.required);
+//     this.citiesPollutionForm.controls.parameter.setValidators(Validators.required);
 
-    if (this.showDatePicker) {
-      this.citiesPollutionForm.controls.fromDate.setValidators(Validators.required);
-      this.citiesPollutionForm.controls.toDate.setValidators(Validators.required);
-    } else if (!this.showDatePicker) {
-      this.citiesPollutionForm.controls.fromDate.clearValidators();
-      this.citiesPollutionForm.controls.toDate.clearValidators();
-    }
+//     if (this.showDatePicker) {
+//       this.citiesPollutionForm.controls.fromDate.setValidators(Validators.required);
+//       this.citiesPollutionForm.controls.toDate.setValidators(Validators.required);
+//     } else if (!this.showDatePicker) {
+//       this.citiesPollutionForm.controls.fromDate.clearValidators();
+//       this.citiesPollutionForm.controls.toDate.clearValidators();
+//     }
 
-    this.updateValidators();
-  }
+//     this.updateValidators();
+//   }
 
-  private clearValidators(): void {
-    this.citiesPollutionForm.controls.country.clearValidators();
-    this.citiesPollutionForm.controls.parameter.clearValidators();
-    this.citiesPollutionForm.controls.fromDate.clearValidators();
-    this.citiesPollutionForm.controls.toDate.clearValidators();
+//   private clearValidators(): void {
+//     this.citiesPollutionForm.controls.country.clearValidators();
+//     this.citiesPollutionForm.controls.parameter.clearValidators();
+//     this.citiesPollutionForm.controls.fromDate.clearValidators();
+//     this.citiesPollutionForm.controls.toDate.clearValidators();
 
-    this.updateValidators();
-  }
+//     this.updateValidators();
+//   }
 
-  private updateValidators(): void {
-    this.citiesPollutionForm.controls.country.updateValueAndValidity();
-    this.citiesPollutionForm.controls.parameter.updateValueAndValidity();
-    this.citiesPollutionForm.controls.fromDate.updateValueAndValidity();
-    this.citiesPollutionForm.controls.toDate.updateValueAndValidity();
-  }
+//   private updateValidators(): void {
+//     this.citiesPollutionForm.controls.country.updateValueAndValidity();
+//     this.citiesPollutionForm.controls.parameter.updateValueAndValidity();
+//     this.citiesPollutionForm.controls.fromDate.updateValueAndValidity();
+//     this.citiesPollutionForm.controls.toDate.updateValueAndValidity();
+//   }
 }
