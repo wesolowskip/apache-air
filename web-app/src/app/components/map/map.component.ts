@@ -71,7 +71,7 @@ export class MapComponent implements AfterViewInit {
 
     ngAfterViewInit() {
         this.initMap();
-        this.timerSubscription = timer(0, 10000).pipe( 
+        this.timerSubscription = timer(0, 20000).pipe( 
             map(() => { 
               this.getPredictionsData(); // load data contains the http request 
             }) 

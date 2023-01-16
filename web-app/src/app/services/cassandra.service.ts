@@ -19,10 +19,14 @@ var LeafIcon = L.Icon.extend({
 
 var greenIcon = new LeafIcon();
 var yellowIcon = new LeafIcon();
+var orangeIcon = new LeafIcon();
 var redIcon = new LeafIcon();
+var brownIcon = new LeafIcon();
 greenIcon.options.iconUrl = 'assets/data/images/green_marker.png';
 yellowIcon.options.iconUrl = 'assets/data/images/yellow_marker.png';
+orangeIcon.options.iconUrl = 'assets/data/images/orange_marker.png';
 redIcon.options.iconUrl = 'assets/data/images/red_marker.png';
+brownIcon.options.iconUrl = 'assets/data/images/brown_marker.png';
 @Injectable({
   providedIn: 'root'
 })
@@ -102,15 +106,24 @@ export class CassandraService {
     }
 
     private selectMarker(stationData: StationDataModel): L.Icon<L.IconOptions> {
-        let measures = [stationData.predictions.no2, stationData.predictions.o3, stationData.predictions.pm10, stationData.predictions.pm25].filter(x => x != null || x != undefined)
-        let maxLevel = measures.sort((val1,val2)=> { return (val1 < val2 ) ? 1 : -1 })[0]
+        let measures = [stationData.predictions.no2, 
+            stationData.predictions.o3, 
+            stationData.predictions.pm10, 
+            stationData.predictions.pm25]
+                .filter(x => x != null || x != undefined)
+        
+                let maxLevel = measures.sort((val1,val2)=> { return (val1 < val2 ) ? 1 : -1 })[0]
 
-        if (maxLevel < 20) {
+        if (maxLevel < 15) {
             return greenIcon;
-        } else if (maxLevel < 50) {
+        } else if (maxLevel < 30) {
             return yellowIcon;
-        } else {
+        } else if (maxLevel < 45) {
+            return orangeIcon;
+        } else if (maxLevel < 60) {
             return redIcon;
+        } else {
+            return brownIcon;
         }
     }
 

@@ -19,7 +19,8 @@
 
 
   "goButton": "Wyświetl!",
-
+  "refresh": "Odśwież",
+  "notProvided": "Brak pomiarów",
   "date": "Data",
 
   "airMessage": "Stan powietrza:",
