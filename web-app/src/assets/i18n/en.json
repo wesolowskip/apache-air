@@ -19,7 +19,8 @@
 
 
   "goButton": "Go!",
-
+  "refresh": "Refresh",
+  "notProvided": "Not provided",
   "date": "Date",
 
   "airMessage": "Air quality:",

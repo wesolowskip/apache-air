@@ -1,13 +1,15 @@
 import { Injectable } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import { StationDataModel } from '../models/station-data.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PopupService {
-    constructor() { }
+    constructor(private translate: TranslateService) { }
 
-    public makeCapitalPopup(data: any): string {
+    public makeCapitalPopup(data: any
+        ): string {
         // return `` +
         // `<table>` +
         //     `<tr>`+
@@ -53,7 +55,7 @@ export class PopupService {
                 `<td> PM10: ` + `</td><td>` + `${this.checkIfUndefined(f.predictions.pm10)}` + `</td>` + 
             `</tr>` +
             `<tr>` +
-                `<td> PM2_5: ` + `</td><td>` + `${this.checkIfUndefined(f.predictions.pm25)}` + `</td>` + 
+                `<td> PM2.5: ` + `</td><td>` + `${this.checkIfUndefined(f.predictions.pm25)}` + `</td>` + 
             `</tr>` +
             `<tr>` +
                 `<td> NO2: ` + `</td><td>` + `${this.checkIfUndefined(f.predictions.no2)}` + `</td>` + 
@@ -65,6 +67,6 @@ export class PopupService {
     }
 
     private checkIfUndefined(x: any) {
-        return x != null ? x : "Not provided"
+        return x != null ? x : this.translate.instant("notProvided");
     }
 }
