@@ -1,6 +1,7 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import * as L from 'leaflet';
+import { BatchViewModel } from '../models/batch-view.model';
 import { PollutionForecast } from '../models/pollution-forecast.dto';
 import { PredictionLevels } from '../models/prediction-levels';
 import { StationDataModel } from '../models/station-data.model';
@@ -37,6 +38,8 @@ export class CassandraService {
     private mockPredictions: string[] = ['/assets/data/pollution-levels.mock.json', 
         '/assets/data/pollution-levels-2.mock.json',
         '/assets/data/pollution-levels-3.mock.json'];
+
+    private mockBatchViews: string = '/assets/data/batch.json';
 
     constructor(private http: HttpClient,
         private popupService: PopupService) {
@@ -104,6 +107,17 @@ export class CassandraService {
             }
         });
     }
+
+    public async getMREs(): Promise<BatchViewModel[]> {
+        let mres: BatchViewModel[];
+        await this.httpGet<any>(`batch_views`, null)
+            .then((response: any[]) => {
+                mres = response.map(x => new BatchViewModel(x[0], x[1], x[2], x[3]))
+            })
+            .catch();
+        return mres;
+    }
+    
 
     private selectMarker(stationData: StationDataModel): L.Icon<L.IconOptions> {
         let measures = [stationData.predictions.no2, 

@@ -22,6 +22,10 @@
   "refresh": "Odśwież",
   "notProvided": "Brak pomiarów",
   "date": "Data",
+  "mre": "Średnie błędy względne",
+  "timestamp": "Data",
+  "particle": "Cząstka",
+  "interval": "Przedział",
 
   "airMessage": "Stan powietrza:",
   "messageGood": "Dobry",
