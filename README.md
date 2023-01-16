@@ -113,3 +113,11 @@ Wstawianie np.:
 5. `INSERT INTO apache_air.batch_views (timestamp, particle, interval, mre) VALUES ('2011-02-03 04:05', 'NO', 1, 54.34);`
 
 Schemat tabelek jest w pliku `cassandra/schema.cql`
+
+## Web-app
+
+Aplikacja dostępna jest pod https://localhost:4200
+
+Lokalne uruchomienie aplikacji bez użycia kontenera: `ng serve -o`
+
+Bazowy layout aplikacji na podstawie: https://github.com/matthny/air-pollution-app
