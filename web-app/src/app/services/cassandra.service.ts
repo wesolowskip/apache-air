@@ -45,11 +45,12 @@ export class CassandraService {
         return await this.httpPost<any, any>(`insert`, null);
     }
 
-    public getPredictions(map: L.Map) {
+    public async getPredictions(map: L.Map) {
 
-        //let predictions = await this.httpGet<any>(`predictions`, null);
-        let predictions = this.http.get(this.mockPredictions[this.getRandomInt(3)]).subscribe((forecasts: PollutionForecast[]) => {
-            
+        let predictions = this.httpGet<any>(`predictions`, null).then((forecasts: any[]) => {
+
+            forecasts = forecasts.map(x => new PollutionForecast(x[0], x[1], x[2], x[3], x[4], x[5]));
+
             var groupBy = function(xs, key) {
                 return xs.reduce(function(rv, x) {
                   (rv[x[key]] = rv[x[key]] || []).push(x);
