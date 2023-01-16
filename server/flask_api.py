@@ -28,4 +28,15 @@ def insertion():
     data = {'message': 'Done', 'code': 'SUCCESS'}
     return make_response(jsonify(data), 201)
 
+@app.route('/batch_views', methods = ['GET'])
+def batch_views():
+    cluster = Cluster(hosts, auth_provider=auth_provider, port=9042)
+    session = cluster.connect()
+    rows = session.execute("SELECT * FROM apache_air.batch_views;").all()
+    max_timestamp = max([row.timestamp for row in rows])
+    rows = [row for row in rows if row.timestamp == max_timestamp]
+
+    if rows:
+        return jsonify(rows)
+
 app.run(debug=True, host='0.0.0.0', port=1337)

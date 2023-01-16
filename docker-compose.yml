@@ -163,6 +163,8 @@ services:
     container_name: flask-server
     depends_on: 
       - init-cassandra
+    volumes:
+      - ./server/flask_api.py:/python-docker/flask_api.py
     ports:
       - "5001:1337"
 

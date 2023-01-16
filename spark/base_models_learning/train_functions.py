@@ -7,7 +7,7 @@ from pyspark.sql.session import SparkSession
 sc = SparkContext.getOrCreate()
 spark = SparkSession.builder.config(
     "spark.cassandra.connection.host", "cassandra").getOrCreate()
-
+spark.sparkContext.setLogLevel('WARN')
 import os
 import datetime
 particles = ('NO2', 'O3', 'PM25', 'PM10')
@@ -32,7 +32,7 @@ def train_models(df, particles=particles, models_dir='/home/base_models_learning
             print(particle)
             summary, general_summary, model = train_model(
                 df, particle, particles, type_)
-            models[f'{type}_{particle}'] = model
+            models[f'{type_}_{particle}'] = model
             summaries.append(summary)
             general_summaries.append(general_summary)
 
@@ -51,15 +51,14 @@ def train_models(df, particles=particles, models_dir='/home/base_models_learning
         zip(general_summary_pd['particle'], general_summary_pd['model_type']))
 
     for particle, type_ in best_models.items():
-        save_model(models[f'{type}_{particle}'],
-                   os.path.join(models_dir, f'{now}_{particle}.model'))
+        save_model(models[f'{type_}_{particle}'],
+                   os.path.join(models_dir, f'{now}_{type_}_{particle}.model'))
 
     summary = union_all(summaries)
     save_summary(summary, os.path.join(summary_dir, f'{now}_summary.csv'))
 
-    now = '2022_12_19_14_46_40'
-    y, m, d, h, M, s = now.split('_')
-    now = '-'.join([y, m, d]) + ' ' + ':'.join([h, M, s])
+    now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    print(f"now: {now}")
     summary\
         .filter(summary.model_type=='GB')\
         .drop('model_type')\
