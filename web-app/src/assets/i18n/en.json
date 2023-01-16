@@ -22,6 +22,10 @@
   "refresh": "Refresh",
   "notProvided": "Not provided",
   "date": "Date",
+  "mre": "Mean Relative Errors",
+  "timestamp": "Timestamp",
+  "particle": "Particle",
+  "interval": "Interval",
 
   "airMessage": "Air quality:",
   "messageGood": "Good",
