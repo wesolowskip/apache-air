@@ -30,14 +30,6 @@ export class WikiService {
     let parameterPostfix: string;
 
     if (this.translate.currentLang === 'en') {
-      if (parameter === Parameter.bc) {
-        parameterPostfix = 'Black_carbon';
-      }
-
-      if (parameter === Parameter.co) {
-        parameterPostfix = 'Carbon_monoxide';
-      }
-
       if (parameter === Parameter.no2) {
         parameterPostfix = 'Nitrogen_dioxide';
       }
@@ -53,20 +45,9 @@ export class WikiService {
       if (parameter === Parameter.pm25) {
         parameterPostfix = 'Particulates';
       }
-
-      if (parameter === Parameter.so2) {
-        parameterPostfix = 'Sulfur_dioxide';
-      }
     }
 
     if (this.translate.currentLang === 'pl') {
-      if (parameter === Parameter.bc) {
-        parameterPostfix = 'Czarny_węgiel';
-      }
-
-      if (parameter === Parameter.co) {
-        parameterPostfix = 'Tlenek_węgla';
-      }
 
       if (parameter === Parameter.no2) {
         parameterPostfix = 'Dwutlenek_azotu';
@@ -82,10 +63,6 @@ export class WikiService {
 
       if (parameter === Parameter.pm25) {
         parameterPostfix = 'PM2,5';
-      }
-
-      if (parameter === Parameter.so2) {
-        parameterPostfix = 'Dwutlenek_siarki';
       }
     }
     return parameterPostfix;

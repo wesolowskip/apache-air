@@ -155,7 +155,7 @@ services:
     image: apache-air-web
     container_name: web-app
     ports:
-      - 4200:80
+      - 4200:4200
 
   flask-server:
     build: server

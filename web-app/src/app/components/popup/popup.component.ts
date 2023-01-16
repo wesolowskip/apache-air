@@ -28,7 +28,7 @@ export class PopupComponent {
   }
 
   public static getHeight(isHandset: boolean): string {
-    return isHandset ? '95vh' : '30vh';
+    return isHandset ? '95vh' : '50vh';
   }
 
   public getTitle(parameter): string {
