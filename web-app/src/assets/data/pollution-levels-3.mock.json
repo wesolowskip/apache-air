@@ -13,7 +13,7 @@
         "station_name": "Oława, ul. Żołnierzy Armii Krajowej",
         "timestamp": "2023-01-15 19:34:52",
         "particle": "O3",
-        "prediction": 57.195
+        "prediction": 7.195
     },
     {
         "longtitude": 18.23657,
@@ -21,7 +21,7 @@
         "station_name": "Kedzierzyn Koźle, ul. Śmiałego",
         "timestamp": "2023-01-15 19:34:00",
         "particle": "NO2",
-        "prediction": 10.41121
+        "prediction": 90.41121
     },
     {
         "longtitude": 18.23657,
@@ -45,7 +45,7 @@
         "station_name": "Kedzierzyn Koźle, ul. Śmiałego",
         "timestamp": "2023-01-15 19:34:00",
         "particle": "PM2.5",
-        "prediction": 5.65121
+        "prediction": 15.65121
     },
     {
         "longtitude": 21.28817,
@@ -53,7 +53,7 @@
         "station_name": "Guty Duże",
         "timestamp": "2023-01-15 19:34:00",
         "particle": "NO2",
-        "prediction": 5.9324
+        "prediction": 15.9324
     },
     {
         "longtitude": 21.28817,
@@ -61,7 +61,7 @@
         "station_name": "Guty Duże",
         "timestamp": "2023-01-15 19:34:00",
         "particle": "O3",
-        "prediction": 44.18104
+        "prediction": 4.18104
     },
     {
         "longtitude": 21.28817,
@@ -69,6 +69,30 @@
         "station_name": "Guty Duże",
         "timestamp": "2023-01-15 19:34:00",
         "particle": "PM10",
-        "prediction": 23.98952
+        "prediction": 13.98952
+    },
+    {
+        "longtitude": 19.96,
+        "lattitude": 53.69,
+        "station_name": "Ostróda, ul.Piłsudskiego",
+        "timestamp": "2023-01-15 19:34:00",
+        "particle": "NO2",
+        "prediction": 5.9324
+    },
+    {
+        "longtitude": 19.96,
+        "lattitude": 53.69,
+        "station_name": "Ostróda, ul.Piłsudskiego",
+        "timestamp": "2023-01-15 19:34:00",
+        "particle": "O3",
+        "prediction": 25.9324
+    },
+    {
+        "longtitude": 19.96,
+        "lattitude": 53.69,
+        "station_name": "Ostróda, ul.Piłsudskiego",
+        "timestamp": "2023-01-15 19:34:00",
+        "particle": "PM10",
+        "prediction": 11.839
     }
 ]

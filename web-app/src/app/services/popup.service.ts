@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { PollutionForecast } from '../models/pollution-forecast.dto';
+import { StationDataModel } from '../models/station-data.model';
 
 @Injectable({
   providedIn: 'root'
@@ -43,24 +43,28 @@ export class PopupService {
         `</table>`;
     }
 
-    public makePollutionPopup(f: PollutionForecast): string {
+    public makePollutionPopup(f: StationDataModel): string {
         return `` +
         `<table>` +
             `<tr>`+
                 `<th colspan="2" style="font-weight: 700; padding:5px;">` + f.station_name + "<br>" + f.timestamp + `</th>` +
             `</tr>`+
             `<tr>` +
-                `<td> PM10: ` + `</td><td>` + f.prediction.pm10 + `</td>` + 
+                `<td> PM10: ` + `</td><td>` + `${this.checkIfUndefined(f.predictions.pm10)}` + `</td>` + 
             `</tr>` +
             `<tr>` +
-                `<td> PM2_5: ` + `</td><td>` + f.prediction.pm25 + `</td>` + 
+                `<td> PM2_5: ` + `</td><td>` + `${this.checkIfUndefined(f.predictions.pm25)}` + `</td>` + 
             `</tr>` +
             `<tr>` +
-                `<td> NO2: ` + `</td><td>` + f.prediction.no2 + `</td>` + 
+                `<td> NO2: ` + `</td><td>` + `${this.checkIfUndefined(f.predictions.no2)}` + `</td>` + 
             `</tr>` +
             `<tr>` +
-                `<td> O3: ` + `</td><td>` + f.prediction.o3 + `</td>` + 
+                `<td> O3: ` + `</td><td>` + `${this.checkIfUndefined(f.predictions.o3)}` + `</td>` + 
             `</tr>` +
         `</table>`;
+    }
+
+    private checkIfUndefined(x: any) {
+        return x != null ? x : "Not provided"
     }
 }

@@ -8,7 +8,7 @@ const routes: Routes = [
   { path: 'main', component: MainComponent },
   { path: 'cities', component: CitiesComponent },
   { path: 'map', component: MapComponent },
-  { path: '', redirectTo: 'main' ,  pathMatch: 'full' }
+  { path: '', redirectTo: 'map' ,  pathMatch: 'full' }
 ];
 
 @NgModule({

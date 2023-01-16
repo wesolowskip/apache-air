@@ -1,5 +1,7 @@
 import { AfterViewInit, Component, ViewChild } from '@angular/core';
 import * as L from 'leaflet';
+import { Subscription, timer } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { CassandraService } from 'src/app/services/cassandra.service';
 import { PollutionLevelsService } from 'src/app/services/pollution-levels.service';
 
@@ -47,6 +49,7 @@ L.Marker.prototype.options.icon = iconDefault;
 export class MapComponent implements AfterViewInit {
     @ViewChild('map', {static: false})
     private map;
+    public timerSubscription: Subscription; 
 
     private initMap(): void {
         this.map = L.map('map', {
@@ -68,11 +71,15 @@ export class MapComponent implements AfterViewInit {
 
     ngAfterViewInit() {
         this.initMap();
-        this.pollutionLevelsService.makeCapitalMarkers(this.map);
+        this.timerSubscription = timer(0, 1000).pipe( 
+            map(() => { 
+              this.getPredictionsData(); // load data contains the http request 
+            }) 
+          ).subscribe(); 
     }
 
-    public async describe() {
-        await this.cassandraService.insert();
-        await this.cassandraService.get();
+    public async getPredictionsData(): Promise<void> {
+        //await this.cassandraService.insert();
+        this.cassandraService.getPredictions(this.map);
     }
 }
