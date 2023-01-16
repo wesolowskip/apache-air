@@ -5,7 +5,7 @@ from cassandra.policies import WhiteListRoundRobinPolicy
 from cassandra.query import tuple_factory
 from flask_cors import CORS
 
-hosts = ['172.18.0.1']
+hosts = ['cassandra']
 auth_provider = PlainTextAuthProvider(username='cassandra', password='cassandra')
 
 app = Flask(__name__)
