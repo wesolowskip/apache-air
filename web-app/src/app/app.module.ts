@@ -37,6 +37,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { MapComponent } from './components/map/map.component';
+import { MreComponent } from './components/mre';
 
 @NgModule({
   declarations: [
@@ -47,6 +48,7 @@ import { MapComponent } from './components/map/map.component';
     PopupComponent,
     PollutionWarningComponent,
     MapComponent,
+    MreComponent,
   ],
   entryComponents: [PopupComponent],
   imports: [
