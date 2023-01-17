@@ -2,6 +2,7 @@
 
 hadoop/datanode/
 hadoop/namenode/
+!hadoop/namenode/init2*
 
 __pycache__/
 *.py[cod]
