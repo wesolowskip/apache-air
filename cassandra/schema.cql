@@ -12,7 +12,7 @@ CREATE TABLE apache_air.batch_views (
     particle text,
     interval tinyint,
     mre float,
-    PRIMARY KEY((timestamp), particle, interval)
+    PRIMARY KEY((particle), interval)
 );
 
 
